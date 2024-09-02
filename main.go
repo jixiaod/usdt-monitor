@@ -19,7 +19,7 @@ func main() {
 		LogFilePerm: 0640,
 		WorkDir:     "./",
 		Umask:       027,
-		Args:        []string{"[go-daemon usdt-monitor]"},
+		Args:        []string{"go usdt-monitor"},
 	}
 
 	d, err := cntxt.Reborn()
@@ -49,13 +49,13 @@ func handleSignals(cntxt *daemon.Context) {
 		sig := <-sigChan
 		if sig == syscall.SIGHUP {
 			log.Print("Received SIGHUP, restarting...")
-			cntxt.Release()
-			restart()
+			restart(cntxt)
 		}
 	}
 }
 
-func restart() {
+func restart(cntxt *daemon.Context) {
+	cntxt.Release()
 	exe, err := os.Executable()
 	if err != nil {
 		log.Fatalf("Failed to get executable path: %v", err)
