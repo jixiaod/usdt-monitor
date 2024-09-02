@@ -2,7 +2,7 @@
 
 This is a simple daemon that monitors USDT transactions on the Bitcoin network and sends notifications to a Telegram bot.
 
-![image](https://github.com/jixiaod/usdt-monitor/images/screenshot.png)
+![image](https://github.com/jixiaod/usdt-monitor/blob/main/images/screenshot.png)
 
 ## Features
 
