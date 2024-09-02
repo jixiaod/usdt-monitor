@@ -56,7 +56,7 @@ func startMonitoring() {
 			currentBalance, err := getUSDTBalance(apiURL)
 			if err != nil {
 				log.Println("Error fetching USDT balance for", addr.Address, ":", err)
-				time.Sleep(1 * time.Minute)
+				time.Sleep(3 * time.Second)
 				continue
 			}
 			lastBalance, exists := lastBalances[addr.Address]
