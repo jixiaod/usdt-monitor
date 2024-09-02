@@ -37,12 +37,6 @@ func main() {
 		log.Fatalf("Error parsing config file: %v", err)
 	}
 
-	// Combine base URL with addresses
-	var usdtAPIURLs []string
-	for _, addr := range config.Addresses {
-		usdtAPIURLs = append(usdtAPIURLs, config.USDTAPIBaseURL+addr.Address)
-		fmt.Printf("Name: %s, URL: %s\n", addr.Name, config.USDTAPIBaseURL+addr.Address)
-	}
 	log.Fatalf("Error loading config: %v", err)
 	bot, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
@@ -64,10 +58,10 @@ func main() {
 				time.Sleep(1 * time.Minute)
 				continue
 			}
-
 			lastBalance, exists := lastBalances[addr.Address]
-			if exists && !lastBalance.IsZero() && currentBalance.Sub(lastBalance).Abs().GreaterThan(threshold) {
-				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for %s: %s", addr.Address, currentBalance.String()))
+			currentBalanceDecimal := decimal.RequireFromString(currentBalance)
+			if exists && !lastBalance.IsZero() && currentBalanceDecimal.Sub(lastBalance).Abs().GreaterThan(threshold) {
+				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for %s: %s", addr.Address, currentBalanceDecimal.String()))
 				bot.Send(msg)
 			}
 
