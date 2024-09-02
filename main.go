@@ -66,12 +66,13 @@ func main() {
 
 			lastBalances[addr.Address] = decimal.RequireFromString(currentBalance)
 		}
-		time.Sleep(1 * time.Minute)
+		time.Sleep(3 * time.Second)
 	}
 }
 
 func getUSDTBalance(apiURL string) (string, error) {
 	resp, err := http.Get(apiURL)
+	fmt.Println(resp)
 	if err != nil {
 		return "", err
 	}
