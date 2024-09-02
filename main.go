@@ -9,6 +9,7 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/sevlyar/go-daemon"
 	"github.com/shopspring/decimal"
 )
 
@@ -26,7 +27,37 @@ type Config struct {
 }
 
 func main() {
-	// Load configuration
+
+	cntxt := &daemon.Context{
+		PidFileName: "usdt-monitor.pid",
+		PidFilePerm: 0644,
+		LogFileName: "usdt-monitor.log",
+		LogFilePerm: 0640,
+		WorkDir:     "./",
+		Umask:       027,
+		Args:        []string{"[go-daemon usdt-monitor]"},
+	}
+
+	d, err := cntxt.Reborn()
+	if err != nil {
+		log.Fatal("Unable to run: ", err)
+	}
+	if d != nil {
+		return
+	}
+	defer cntxt.Release()
+
+	log.Print("Monitor started")
+
+	for {
+		log.Print("Monitor is running...")
+		runMonitor()
+		time.Sleep(10 * time.Second)
+	}
+
+}
+
+func runMonitor() { // Load configuration
 	configFile, err := os.ReadFile("config.json")
 	if err != nil {
 		log.Fatalf("Error reading config file: %v", err)
@@ -37,7 +68,6 @@ func main() {
 		log.Fatalf("Error parsing config file: %v", err)
 	}
 
-	log.Printf(config.Addresses[0].Address)
 	bot, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
 		log.Panic(err)
@@ -61,7 +91,7 @@ func main() {
 			lastBalance, exists := lastBalances[addr.Address]
 			currentBalanceDecimal := decimal.RequireFromString(currentBalance)
 			if exists && !lastBalance.IsZero() && currentBalanceDecimal.Sub(lastBalance).Abs().GreaterThan(threshold) {
-				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for %s: %s", addr.Address, currentBalanceDecimal.String()))
+				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for %s(%s): %s", addr.Name, addr.Address, currentBalanceDecimal.String()))
 				bot.Send(msg)
 			}
 
@@ -73,7 +103,6 @@ func main() {
 
 func getUSDTBalance(apiURL string) (string, error) {
 	resp, err := http.Get(apiURL)
-	fmt.Println(resp)
 	if err != nil {
 		return "", err
 	}

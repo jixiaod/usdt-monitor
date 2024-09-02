@@ -1,7 +1,7 @@
 {
     "botToken": "5995992793:AAHuHApwCNShyNTZsSudrJm1uGjhpWDdQjk",
     "chatID": -1002248215204,
-    "usdtAPIBaseURL": "https://apilist.tronscanapi.com//api/accountv2?address=",
+    "usdtAPIBaseURL": "https://apilist.tronscanapi.com/api/accountv2?address=",
     "addresses": [
         {"name": "Address 1", "address": "TScqqrtVweHUozbx6v9H1Y9gJjvubL8Vpo"},
         {"name": "Address 2", "address": "TKzi5ymQUretLpBn5AeXyeQhdmowL6kqZm"}
