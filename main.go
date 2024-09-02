@@ -43,11 +43,7 @@ func main() {
 		usdtAPIURLs = append(usdtAPIURLs, config.USDTAPIBaseURL+addr.Address)
 		fmt.Printf("Name: %s, URL: %s\n", addr.Name, config.USDTAPIBaseURL+addr.Address)
 	}
-
-	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
-	}
-
 	bot, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
 		log.Panic(err)
@@ -58,7 +54,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	lastBalances := make(map[string]decimal.Decimal)
-	threshold := decimal.NewFromFloat(config.Threshold)
+	threshold := decimal.NewFromFloat(config.Threshold)g
 	for {
 		for _, addr := range config.Addresses {
 			apiURL := config.USDTAPIBaseURL + addr.Address
@@ -81,27 +77,27 @@ func main() {
 	}
 }
 
-func getUSDTBalance(apiURL string) (decimal.Decimal, error) {
+func getUSDTBalance(apiURL string) (string, error) {
 	resp, err := http.Get(apiURL)
 	if err != nil {
-		return decimal.Zero, err
+		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return decimal.Zero, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var balanceStr string
-	_, err = fmt.Fscanf(resp.Body, "%s", &balanceStr)
-	if err != nil {
-		return decimal.Zero, err
+	var response Response
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return "", err
 	}
 
-	balance, err := decimal.NewFromString(balanceStr)
-	if err != nil {
-		return decimal.Zero, err
+	for _, token := range response.WithPriceTokens {
+		if token.TokenAbbr == "USDT" {
+			return token.Balance, nil
+		}
 	}
 
-	return balance, nil
+	return "", fmt.Errorf("USDT balance not found")
 }
