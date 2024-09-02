@@ -37,6 +37,7 @@ func main() {
 		log.Fatalf("Error parsing config file: %v", err)
 	}
 
+	log.Printf(config.Addresses[0].Address)
 	bot, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
 		log.Panic(err)
