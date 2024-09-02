@@ -25,6 +25,13 @@ type Config struct {
 	Threshold      float64   `json:"threshold"`
 }
 
+type Response struct {
+	WithPriceTokens []struct {
+		TokenAbbr string `json:"tokenAbbr"`
+		Balance   string `json:"balance"`
+	} `json:"withPriceTokens"`
+}
+
 func main() {
 	// Load configuration
 	configFile, err := os.ReadFile("config.json")
@@ -43,7 +50,7 @@ func main() {
 		usdtAPIURLs = append(usdtAPIURLs, config.USDTAPIBaseURL+addr.Address)
 		fmt.Printf("Name: %s, URL: %s\n", addr.Name, config.USDTAPIBaseURL+addr.Address)
 	}
-		log.Fatalf("Error loading config: %v", err)
+	log.Fatalf("Error loading config: %v", err)
 	bot, err := tgbotapi.NewBotAPI(config.BotToken)
 	if err != nil {
 		log.Panic(err)
@@ -54,7 +61,7 @@ func main() {
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	lastBalances := make(map[string]decimal.Decimal)
-	threshold := decimal.NewFromFloat(config.Threshold)g
+	threshold := decimal.NewFromFloat(config.Threshold)
 	for {
 		for _, addr := range config.Addresses {
 			apiURL := config.USDTAPIBaseURL + addr.Address
@@ -71,7 +78,7 @@ func main() {
 				bot.Send(msg)
 			}
 
-			lastBalances[addr.Address] = currentBalance
+			lastBalances[addr.Address] = decimal.RequireFromString(currentBalance)
 		}
 		time.Sleep(1 * time.Minute)
 	}
@@ -88,7 +95,6 @@ func getUSDTBalance(apiURL string) (string, error) {
 		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var response Response
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return "", err
 	}
