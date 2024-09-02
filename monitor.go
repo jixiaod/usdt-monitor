@@ -27,6 +27,7 @@ type Config struct {
 
 func startMonitoring() {
 
+	log.Print("Monitor started")
 	// Load configuration
 	configFile, err := os.ReadFile("config.json")
 	if err != nil {

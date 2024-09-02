@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"syscall"
 
@@ -30,7 +31,7 @@ func main() {
 	}
 	defer cntxt.Release()
 
-	log.Print("Monitor started")
+	log.Print("Monitor starting...")
 
 	// Start signal handler in a separate goroutine
 	go handleSignals(cntxt)
@@ -49,7 +50,25 @@ func handleSignals(cntxt *daemon.Context) {
 		if sig == syscall.SIGHUP {
 			log.Print("Received SIGHUP, restarting...")
 			cntxt.Release()
-			os.Exit(0)
+			restart()
 		}
 	}
+}
+
+func restart() {
+	exe, err := os.Executable()
+	if err != nil {
+		log.Fatalf("Failed to get executable path: %v", err)
+	}
+
+	cmd := exec.Command(exe)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	if err := cmd.Start(); err != nil {
+		log.Fatalf("Failed to restart process: %v", err)
+	}
+
+	os.Exit(0)
 }
