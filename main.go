@@ -91,7 +91,7 @@ func runMonitor() { // Load configuration
 			lastBalance, exists := lastBalances[addr.Address]
 			currentBalanceDecimal := decimal.RequireFromString(currentBalance)
 			if exists && !lastBalance.IsZero() && currentBalanceDecimal.Sub(lastBalance).Abs().GreaterThan(threshold) {
-				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for %s(%s): %s", addr.Name, addr.Address, currentBalanceDecimal.String()))
+				msg := tgbotapi.NewMessage(config.ChatID, fmt.Sprintf("USDT balance changed for: \n name: %s \n address: %s \n balance: %s", addr.Name, addr.Address, currentBalanceDecimal.String()))
 				bot.Send(msg)
 			}
 
