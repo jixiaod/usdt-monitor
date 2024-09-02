@@ -12,7 +12,7 @@ This is a simple daemon that monitors USDT transactions on the Bitcoin network a
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/usdt-monitor.git
+   git clone https://github.com/jixiaod/usdt-monitor.git
    ```
 
 2. Install dependencies:
@@ -38,7 +38,7 @@ Create a `config.json` file with the following structure:
 {
     "botToken": "5995992793:AAHuHApwCNShyNTZsSudrJm1uGjhpWXXXX",
     "chatID": -1002248200000,
-    "usdtAPIBaseURL": "https://apilist.tronscanapi.com/api/accountv2?address=",
+    "usdtAPIBaseURL": "https://apilist.tronscanapi.com",
     "addresses": [
         {"name": "Address 1", "address": "TScqqrtVweHUozbx6v9H1Y9gJjvuXXXXXX"},
         {"name": "Address 2", "address": "TKzi5ymQUretLpBn5AeXyeQhdmoXXXXXXX"}

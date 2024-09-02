@@ -52,7 +52,7 @@ func startMonitoring() {
 	threshold := decimal.NewFromFloat(config.Threshold)
 	for {
 		for _, addr := range config.Addresses {
-			apiURL := config.USDTAPIBaseURL + addr.Address
+			apiURL := config.USDTAPIBaseURL + "/api/accountv2?address=" + addr.Address
 			currentBalance, err := getUSDTBalance(apiURL)
 			if err != nil {
 				log.Println("Error fetching USDT balance for", addr.Address, ":", err)
