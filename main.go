@@ -25,13 +25,6 @@ type Config struct {
 	Threshold      float64   `json:"threshold"`
 }
 
-type Response struct {
-	WithPriceTokens []struct {
-		TokenAbbr string `json:"tokenAbbr"`
-		Balance   string `json:"balance"`
-	} `json:"withPriceTokens"`
-}
-
 func main() {
 	// Load configuration
 	configFile, err := os.ReadFile("config.json")
@@ -93,6 +86,13 @@ func getUSDTBalance(apiURL string) (string, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var response struct {
+		WithPriceTokens []struct {
+			TokenAbbr string `json:"tokenAbbr"`
+			Balance   string `json:"balance"`
+		} `json:"withPriceTokens"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
